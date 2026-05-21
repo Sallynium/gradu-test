@@ -1,67 +1,49 @@
-const sharp = require('sharp');
+const { createCanvas, loadImage, registerFont } = require('canvas');
 const path = require('path');
-
 const fs = require('fs');
-const FONT_B64 = fs.readFileSync(path.join(__dirname, 'fonts', 'NotoSansTC.ttf')).toString('base64');
-const FONT_SRC = `data:font/ttf;base64,${FONT_B64}`;
+
+registerFont(path.join(__dirname, 'fonts', 'Iansui-Regular.ttf'), { family: 'Iansui' });
+
+const SIZE = 2481;
+const AVATAR_D = 430;
+const AVATAR_R = AVATAR_D / 2;
+const AVATAR_CX = 1750;
+const AVATAR_CY = 900;
 
 async function generateCert({ avatarPath, name, userId, certNum, outputPath }) {
-  const TEMPLATE = path.join(__dirname, 'template.png');
-  const SIZE = 2481;
+  const canvas = createCanvas(SIZE, SIZE);
+  const ctx = canvas.getContext('2d');
 
-  const AVATAR_D = 430;
-  const AVATAR_R = AVATAR_D / 2;
-  const AVATAR_LEFT = 1750 - AVATAR_R;  // 1535
-  const AVATAR_TOP  =  900 - AVATAR_R;  //  685
+  const template = await loadImage(path.join(__dirname, 'template.png'));
+  ctx.drawImage(template, 0, 0, SIZE, SIZE);
 
-  const circleMask = Buffer.from(
-    `<svg width="${AVATAR_D}" height="${AVATAR_D}">
-      <circle cx="${AVATAR_R}" cy="${AVATAR_R}" r="${AVATAR_R}" fill="white"/>
-    </svg>`
-  );
+  const avatarImg = await loadImage(avatarPath);
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(AVATAR_CX, AVATAR_CY, AVATAR_R, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.drawImage(avatarImg, AVATAR_CX - AVATAR_R, AVATAR_CY - AVATAR_R, AVATAR_D, AVATAR_D);
+  ctx.restore();
 
-  const avatarBuf = await sharp(avatarPath)
-    .resize(AVATAR_D, AVATAR_D, { fit: 'cover' })
-    .composite([{ input: circleMask, blend: 'dest-in' }])
-    .png()
-    .toBuffer();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
 
-  const textSvg = `<svg width="${SIZE}" height="${SIZE}" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <style>
-        @font-face {
-          font-family: 'NotoSansTC';
-          src: url('${FONT_SRC}');
-        }
-      </style>
-    </defs>
-    <text x="1750" y="1450" font-size="60" font-weight="bold" fill="black"
-          text-anchor="middle" font-family="NotoSansTC, sans-serif">${esc(name)}</text>
-    <text x="1750" y="1530" font-size="46" fill="#444444"
-          text-anchor="middle" font-family="NotoSansTC, sans-serif">${esc(userId)}</text>
-    <text x="1580" y="1980" font-size="100" font-weight="bold" fill="black"
-          text-anchor="middle" font-family="NotoSansTC, sans-serif">${esc(certNum)}</text>
-  </svg>`;
+  ctx.font = 'bold 60px Iansui';
+  ctx.fillStyle = '#000000';
+  ctx.fillText(name, 1750, 1450);
 
-  await sharp(TEMPLATE)
-    .resize(SIZE, SIZE, { fit: 'fill' })
-    .composite([
-      { input: avatarBuf, top: AVATAR_TOP, left: AVATAR_LEFT },
-      { input: Buffer.from(textSvg), top: 0, left: 0 },
-    ])
-    .png()
-    .toFile(outputPath || 'output_cert.png');
+  ctx.font = '46px Iansui';
+  ctx.fillStyle = '#444444';
+  ctx.fillText(userId, 1750, 1530);
 
+  ctx.font = 'bold 100px Iansui';
+  ctx.fillStyle = '#000000';
+  ctx.fillText(certNum, 1580, 1980);
+
+  fs.writeFileSync(outputPath || 'output_cert.png', canvas.toBuffer('image/png'));
   console.log('done:', outputPath || 'output_cert.png');
 }
 
-function esc(str) {
-  return String(str)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-// 執行：node generate-cert.js <頭貼路徑> <名字> <ID> <序號>
 generateCert({
   avatarPath: process.argv[2] || 'test_avatar.jpg',
   name:       process.argv[3] || 'Z量人',
