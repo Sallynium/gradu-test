@@ -1,8 +1,9 @@
 const sharp = require('sharp');
 const path = require('path');
 
-const FONT_PATH = path.join(__dirname, 'fonts', 'NotoSansTC-Regular.otf').replace(/\\/g, '/');
-const FONT_SRC = `file://${FONT_PATH.startsWith('/') ? '' : '/'}${FONT_PATH}`;
+const fs = require('fs');
+const FONT_B64 = fs.readFileSync(path.join(__dirname, 'fonts', 'NotoSansTC.ttf')).toString('base64');
+const FONT_SRC = `data:font/ttf;base64,${FONT_B64}`;
 
 async function generateCert({ avatarPath, name, userId, certNum, outputPath }) {
   const TEMPLATE = path.join(__dirname, 'template.png');

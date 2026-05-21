@@ -2,8 +2,8 @@ const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
 
-const FONT_B64 = fs.readFileSync(path.join(process.cwd(), 'fonts', 'NotoSansTC-Regular.otf')).toString('base64');
-const FONT_SRC = `data:font/otf;base64,${FONT_B64}`;
+const FONT_B64 = fs.readFileSync(path.join(process.cwd(), 'fonts', 'NotoSansTC.ttf')).toString('base64');
+const FONT_SRC = `data:font/ttf;base64,${FONT_B64}`;
 
 module.exports = async (req, res) => {
   const { user, name, num } = req.query;
