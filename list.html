@@ -399,17 +399,16 @@ async function makeCertificate(name, num) {
     const controller = new AbortController();
     const t = setTimeout(() => controller.abort(), 10000);
     const res = await fetch(
-      'https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.threads.net/@' + name),
+      'https://corsproxy.io/?' + encodeURIComponent('https://www.threads.net/@' + name),
       { signal: controller.signal }
     );
     clearTimeout(t);
-    const data = await res.json();
-    const doc = new DOMParser().parseFromString(data.contents, 'text/html');
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
     const ogImg   = doc.querySelector('meta[property="og:image"]');
     const ogTitle = doc.querySelector('meta[property="og:title"]');
     if (ogImg) {
-      const raw = ogImg.getAttribute('content');
-      avatarUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(raw);
+      avatarUrl = 'https://images.weserv.nl/?url=' + encodeURIComponent(ogImg.getAttribute('content'));
     }
     if (ogTitle) {
       const raw = ogTitle.getAttribute('content');
