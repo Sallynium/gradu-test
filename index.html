@@ -266,8 +266,8 @@
   /* ── 證書 overlay ── */
   .cert-overlay {
     display: none; position: fixed; inset: 0;
-    background: rgba(10,15,25,0.92);
-    backdrop-filter: blur(18px);
+    background: rgba(10,15,25,0.85);
+    backdrop-filter: blur(12px);
     z-index: 3000;
     align-items: center; justify-content: center;
     padding: 20px; overflow-y: auto;
@@ -275,52 +275,42 @@
   .cert-overlay.active { display: flex; }
   .cert-wrapper { display: flex; flex-direction: column; align-items: center; gap: 16px; }
   .certificate {
-    border-radius: 18px; width: min(460px, 92vw);
-    overflow: hidden;
-    box-shadow: 0 32px 90px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08);
-    background:
-      linear-gradient(rgba(18,26,42,0.78), rgba(18,26,42,0.78)),
-      url('template.jpg') center 42%/cover no-repeat;
+    width: min(360px, 88vw);
+    aspect-ratio: 1108/1477;
+    background: url('template.jpg') top left/100% 100% no-repeat;
+    position: relative;
+    border-radius: 4px;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.6);
   }
-  .cert-stripe-bar { display: flex; height: 7px; }
-  .cert-stripe-bar div { flex: 1; }
-  .cert-body-area { padding: 28px 28px 26px; }
-  .cert-top-row { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; }
+  .cert-top-row {
+    position: absolute;
+    top: 7%; left: 13%; right: 7%;
+    display: flex; align-items: center; gap: 12px;
+  }
   .cert-avatar-wrap {
-    width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0;
-    border: 2.5px solid rgba(255,255,255,0.25); overflow: hidden;
-    background: #3a506a;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; position: relative;
+    width: 60px; height: 60px; border-radius: 50%;
+    overflow: hidden; flex-shrink: 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    background: #d8cfc4;
   }
   .cert-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
-  .cert-avatar-wrap::after {
-    content: '📷';
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(0,0,0,0.5); border-radius: 50%;
-    font-size: 1.4rem; opacity: 0; transition: opacity 0.2s;
-  }
-  .cert-avatar-wrap:hover::after { opacity: 1; }
   .cert-name-area { flex: 1; min-width: 0; }
-  .cert-org { font-size: 0.6rem; letter-spacing: 0.25em; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 6px; }
-  .cert-dname { font-size: 1.45rem; font-weight: 900; color: #fff; word-break: break-all; line-height: 1.2; margin-bottom: 4px; }
-  .cert-uname { font-size: 0.78rem; color: rgba(255,255,255,0.5); }
-  .cert-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 4px 0 20px; }
-  .cert-num-area { text-align: center; padding: 18px 0; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 18px; }
-  .cert-badge-label { font-size: 0.62rem; letter-spacing: 0.22em; color: rgba(255,255,255,0.45); text-transform: uppercase; margin-bottom: 4px; }
-  .cert-badge-num { font-size: 2.4rem; font-weight: 900; color: #fff; letter-spacing: 0.04em; }
-  .cert-footer { display: flex; justify-content: space-between; align-items: center; }
-  .cert-title-main { font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.55); letter-spacing: 0.1em; }
-  .cert-date { font-size: 0.65rem; color: rgba(255,255,255,0.35); }
+  .cert-dname { font-size: 1.05rem; font-weight: 900; color: #2a3848; line-height: 1.25; word-break: break-all; }
+  .cert-uname { font-size: 0.7rem; color: #5a6a78; }
+  .cert-num-area {
+    position: absolute;
+    bottom: 10%; left: 13%; right: 7%;
+    text-align: center;
+  }
+  .cert-badge-label { font-size: 0.58rem; color: #6a7a88; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 2px; }
+  .cert-badge-num { font-size: 1.9rem; font-weight: 900; color: #2a3848; }
   .cert-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
   .cert-btn { padding: 11px 24px; border-radius: 28px; border: none; font-size: 0.88rem; font-weight: 800; cursor: pointer; font-family: inherit; transition: all 0.2s; }
-  .cert-btn-slate { background: rgba(255,255,255,0.15); color: #fff; border: 1.5px solid rgba(255,255,255,0.25); backdrop-filter: blur(4px); }
-  .cert-btn-slate:hover { background: rgba(255,255,255,0.25); transform: scale(1.04); }
+  .cert-btn-slate { background: rgba(255,255,255,0.18); color: #fff; border: 1.5px solid rgba(255,255,255,0.3); }
+  .cert-btn-slate:hover { background: rgba(255,255,255,0.28); transform: scale(1.04); }
   .cert-btn-ghost { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.7); border: 1.5px solid rgba(255,255,255,0.15); }
   .cert-btn-ghost:hover { background: rgba(255,255,255,0.14); }
-  .cert-loading { color: #fff; text-align: center; padding: 60px 20px; font-size: 1.05rem; line-height: 1.8; }
+  .cert-loading { color: #fff; text-align: center; padding: 40px 20px; font-size: 1rem; }
   @media print {
     body > *:not(#certOverlay) { display: none !important; }
     #certOverlay { display: block !important; position: static !important; background: none !important; backdrop-filter: none !important; padding: 0; }
@@ -438,53 +428,35 @@ function startCertificate() {
   makeCertificate(_certName, _certNum).catch(() => {});
 }
 
-function makeCertificate(name, num) {
-  document.getElementById('certOverlay').classList.add('active');
-  renderCertificate(name, num, name);
-}
-
-function updateCertAvatar(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const url = URL.createObjectURL(file);
-  const el = document.getElementById('certAvatarImg');
-  el.outerHTML = `<img id="certAvatarImg" src="${url}" style="width:100%;height:100%;object-fit:cover">`;
+async function makeCertificate(name, num) {
+  const certOverlay = document.getElementById('certOverlay');
+  const certWrapper = document.getElementById('certWrapper');
+  certOverlay.classList.add('active');
+  certWrapper.innerHTML = '<div class="cert-loading">✨ 製作中…</div>';
+  let displayName = name;
+  try {
+    const r = await fetch(`/api/profile?user=${encodeURIComponent(name)}`);
+    const d = await r.json();
+    if (d.displayName) displayName = d.displayName;
+  } catch(e) {}
+  renderCertificate(name, num, displayName);
 }
 
 function renderCertificate(username, num, displayName) {
-  const now = new Date();
-  const dateStr = `${now.getFullYear()} 年 ${now.getMonth()+1} 月 ${now.getDate()} 日`;
-  const avatarHtml = `<input type="file" accept="image/*" style="display:none" onchange="updateCertAvatar(this)"><img id="certAvatarImg" src="/api/avatar?user=${encodeURIComponent(username)}" style="width:100%;height:100%;object-fit:cover" onerror="this.outerHTML='<span id=certAvatarImg style=font-size:2.5rem>🎓</span>'">`;
-
   document.getElementById('certWrapper').innerHTML = `
     <div class="certificate">
-      <div class="cert-stripe-bar">
-        <div style="background:#b5a08a"></div>
-        <div style="background:#a8aeb8"></div>
-        <div style="background:#9aaba0"></div>
-        <div style="background:#7a8898"></div>
-        <div style="background:#6a8fa8"></div>
-        <div style="background:#4a6a88"></div>
-        <div style="background:#2a3a58"></div>
+      <div class="cert-top-row">
+        <div class="cert-avatar-wrap">
+          <img src="/api/avatar?user=${encodeURIComponent(username)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">
+        </div>
+        <div class="cert-name-area">
+          <div class="cert-dname">${escapeHtml(displayName)}</div>
+          <div class="cert-uname">@${escapeHtml(username)}</div>
+        </div>
       </div>
-      <div class="cert-body-area">
-        <div class="cert-top-row">
-          <label class="cert-avatar-wrap" title="點擊上傳頭貼">${avatarHtml}</label>
-          <div class="cert-name-area">
-            <div class="cert-org">召喚師協會 · 畢業認證</div>
-            <div class="cert-dname">${escapeHtml(displayName)}</div>
-            <div class="cert-uname">@${escapeHtml(username)}</div>
-          </div>
-        </div>
-        <div class="cert-divider"></div>
-        <div class="cert-num-area">
-          <div class="cert-badge-label">畢業序號</div>
-          <div class="cert-badge-num"># ${num}</div>
-        </div>
-        <div class="cert-footer">
-          <div class="cert-title-main">畢業證書 Certificate of Graduation</div>
-          <div class="cert-date">${dateStr}</div>
-        </div>
+      <div class="cert-num-area">
+        <div class="cert-badge-label">畢業序號</div>
+        <div class="cert-badge-num"># ${num}</div>
       </div>
     </div>
     <div class="cert-actions">
