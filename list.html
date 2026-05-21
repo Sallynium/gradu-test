@@ -262,8 +262,17 @@
     background: #3a506a;
     box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative;
   }
   .cert-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .cert-avatar-wrap::after {
+    content: '📷';
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.5); border-radius: 50%;
+    font-size: 1.4rem; opacity: 0; transition: opacity 0.2s;
+  }
+  .cert-avatar-wrap:hover::after { opacity: 1; }
   .cert-name-area { flex: 1; min-width: 0; }
   .cert-org { font-size: 0.6rem; letter-spacing: 0.25em; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 6px; }
   .cert-dname { font-size: 1.45rem; font-weight: 900; color: #fff; word-break: break-all; line-height: 1.2; margin-bottom: 4px; }
@@ -388,44 +397,23 @@ function startCertificate() {
   makeCertificate(_certName, _certNum);
 }
 
-async function makeCertificate(name, num) {
-  const certOverlay = document.getElementById('certOverlay');
-  const certWrapper = document.getElementById('certWrapper');
-  certOverlay.classList.add('active');
-  certWrapper.innerHTML = '<div class="cert-loading">✨ 正在製作您的畢業證書…<br><small style="opacity:.7">從 Threads 載入資料中</small></div>';
-
-  let avatarUrl = '', displayName = name;
-  try {
-    const controller = new AbortController();
-    const t = setTimeout(() => controller.abort(), 10000);
-    const res = await fetch(
-      'https://corsproxy.io/?' + encodeURIComponent('https://www.threads.net/@' + name),
-      { signal: controller.signal }
-    );
-    clearTimeout(t);
-    const html = await res.text();
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    const ogImg   = doc.querySelector('meta[property="og:image"]');
-    const ogTitle = doc.querySelector('meta[property="og:title"]');
-    if (ogImg) {
-      avatarUrl = 'https://images.weserv.nl/?url=' + encodeURIComponent(ogImg.getAttribute('content'));
-    }
-    if (ogTitle) {
-      const raw = ogTitle.getAttribute('content');
-      const m = raw.match(/^(.+?)\s*[\(@•]/);
-      displayName = m ? m[1].trim() : raw.split(' • ')[0].trim();
-    }
-  } catch(e) {}
-
-  renderCertificate(name, num, displayName, avatarUrl);
+function makeCertificate(name, num) {
+  document.getElementById('certOverlay').classList.add('active');
+  renderCertificate(name, num, name);
 }
 
-function renderCertificate(username, num, displayName, avatarUrl) {
+function updateCertAvatar(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  const el = document.getElementById('certAvatarImg');
+  el.outerHTML = `<img id="certAvatarImg" src="${url}" style="width:100%;height:100%;object-fit:cover">`;
+}
+
+function renderCertificate(username, num, displayName) {
   const now = new Date();
   const dateStr = `${now.getFullYear()} 年 ${now.getMonth()+1} 月 ${now.getDate()} 日`;
-  const avatarHtml = avatarUrl
-    ? `<img src="${avatarUrl}" alt="大頭貼" referrerpolicy="no-referrer" onerror="this.parentNode.innerHTML='<span style=\\'font-size:2.5rem\\'>🎓</span>'">`
-    : '<span style="font-size:2.5rem">🎓</span>';
+  const avatarHtml = `<input type="file" accept="image/*" style="display:none" onchange="updateCertAvatar(this)"><img id="certAvatarImg" src="/api/avatar?user=${encodeURIComponent(username)}" style="width:100%;height:100%;object-fit:cover" onerror="this.outerHTML='<span id=certAvatarImg style=font-size:2.5rem>🎓</span>'">`;
 
   document.getElementById('certWrapper').innerHTML = `
     <div class="certificate">
@@ -440,7 +428,7 @@ function renderCertificate(username, num, displayName, avatarUrl) {
       </div>
       <div class="cert-body-area">
         <div class="cert-top-row">
-          <div class="cert-avatar-wrap">${avatarHtml}</div>
+          <label class="cert-avatar-wrap" title="點擊上傳頭貼">${avatarHtml}</label>
           <div class="cert-name-area">
             <div class="cert-org">召喚師協會 · 畢業認證</div>
             <div class="cert-dname">${escapeHtml(displayName)}</div>
