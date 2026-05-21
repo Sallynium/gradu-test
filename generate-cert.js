@@ -28,15 +28,15 @@ async function generateCert({ avatarPath, name, userId, certNum, outputPath }) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
 
-  ctx.font = 'bold 60px Iansui';
+  ctx.font = 'bold 110px Iansui';
   ctx.fillStyle = '#000000';
   ctx.fillText(name, 1750, 1450);
 
-  ctx.font = '46px Iansui';
+  ctx.font = '75px Iansui';
   ctx.fillStyle = '#444444';
   ctx.fillText(userId, 1750, 1530);
 
-  ctx.font = 'bold 100px Iansui';
+  ctx.font = 'bold 200px Iansui';
   ctx.fillStyle = '#000000';
   ctx.fillText(certNum, 1580, 1980);
 
