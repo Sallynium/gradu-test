@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 畢業名單查詢系統</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 40%, #f0e8ff 100%);
+    font-family: "Microsoft JhengHei", "PingFang TC", Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 60px 20px 40px;
+    color: #4a3050;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .header h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 900;
+    background: linear-gradient(90deg, #f472b6, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 2px 12px rgba(244,114,182,0.35));
+  }
+  .header p {
+    color: #b48abf;
+    font-size: 0.95rem;
+  }
+  .search-container {
+    width: 100%;
+    max-width: 580px;
+    margin-bottom: 22px;
+  }
+  .search-input {
+    width: 100%;
+    padding: 17px 28px;
+    font-size: 1.15rem;
+    border: 2.5px solid #f9c8e8;
+    border-radius: 50px;
+    background: #fff;
+    color: #4a3050;
+    outline: none;
+    transition: all 0.3s;
+    font-family: inherit;
+    box-shadow: 0 4px 20px rgba(244,114,182,0.12);
+  }
+  .search-input::placeholder { color: #d8a8cc; }
+  .search-input:focus {
+    border-color: #f472b6;
+    box-shadow: 0 4px 30px rgba(244,114,182,0.28);
+  }
+  .result-count {
+    color: #c09ab8;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .result-area { width: 100%; max-width: 580px; }
+  .result-card {
+    background: #fff;
+    border: 1.5px solid #f9c8e8;
+    border-radius: 14px;
+    padding: 14px 20px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    animation: slideIn 0.15s ease;
+    box-shadow: 0 2px 12px rgba(244,114,182,0.08);
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .result-card:hover {
+    background: #fdf0f8;
+    border-color: #f472b6;
+    transform: translateX(5px);
+    box-shadow: 0 4px 18px rgba(244,114,182,0.2);
+  }
+  .result-num {
+    background: linear-gradient(135deg, #f472b6, #a78bfa);
+    color: #fff;
+    font-weight: 900;
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    min-width: 65px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .result-name { font-size: 1.05rem; font-weight: 600; flex: 1; color: #4a3050; }
+  .result-arrow { color: #e4b0d4; font-size: 1.3rem; }
+  /* 查無此人 */
+  .no-result {
+    text-align: center;
+    padding: 50px 20px;
+    animation: shake 0.45s ease;
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-12px); }
+    40% { transform: translateX(12px); }
+    60% { transform: translateX(-8px); }
+    80% { transform: translateX(6px); }
+  }
+  .no-result .big-text {
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 900;
+    color: #f472b6;
+    text-shadow: 0 0 30px rgba(244,114,182,0.4);
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .no-result .sub-text { color: #c09ab8; font-size: 0.95rem; margin-top: 8px; }
+  /* 彩蛋 */
+  .no-result .easter-text {
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    font-weight: 900;
+    color: #a78bfa;
+    text-shadow: 0 0 24px rgba(167,139,250,0.4);
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+  /* Nav */
+  .nav-link {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: #fff;
+    color: #c06090;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 0.88rem;
+    border: 1.5px solid #f9c8e8;
+    transition: all 0.3s;
+    box-shadow: 0 2px 12px rgba(244,114,182,0.12);
+    z-index: 10;
+    font-weight: 600;
+  }
+  .nav-link:hover {
+    background: #fdf0f8;
+    border-color: #f472b6;
+    color: #f472b6;
+  }
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(250,220,240,0.5);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: linear-gradient(145deg, #fff8fd, #f5f0ff);
+    border: 2.5px solid #f472b6;
+    border-radius: 28px;
+    padding: 48px 36px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 12px 60px rgba(244,114,182,0.25);
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.6) rotate(-5deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+  .modal .emoji { font-size: 4.5rem; display: block; margin-bottom: 14px; }
+  .modal h2 {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, #f472b6, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 14px;
+  }
+  .modal .grad-name {
+    font-size: 1.25rem;
+    color: #4a3050;
+    font-weight: 700;
+    margin-bottom: 8px;
+    word-break: break-all;
+  }
+  .modal .grad-num {
+    color: #b48abf;
+    font-size: 1rem;
+    margin-bottom: 26px;
+  }
+  .modal .grad-num span {
+    color: #f472b6;
+    font-weight: 900;
+    font-size: 1.4rem;
+  }
+  .modal-close {
+    background: linear-gradient(135deg, #f472b6, #a78bfa);
+    color: #fff;
+    border: none;
+    padding: 13px 36px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 18px rgba(244,114,182,0.3);
+  }
+  .modal-close:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 24px rgba(244,114,182,0.45);
+  }
+  /* Confetti */
+  .confetti-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 999;
+    overflow: hidden;
+  }
+  .confetti {
+    position: absolute;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #e8c8de;
+    font-size: 3rem;
+  }
+</style>
+</head>
+<body>
+
+<a href="list.html" class="nav-link">📋 完整名單</a>
+
+<div class="header">
+  <h1>🎓 畢業名單查詢</h1>
+  <p>輸入你的名字，命運將在此揭曉 ✨</p>
+</div>
+
+<div class="search-container">
+  <input type="text" class="search-input" id="searchInput" placeholder="輸入名字搜尋..." autocomplete="off" spellcheck="false">
+</div>
+
+<div class="result-area" id="resultArea">
+  <div class="empty-state">🔍</div>
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <span class="emoji">🎓</span>
+    <h2>恭喜你畢業！</h2>
+    <div class="grad-name" id="modalName"></div>
+    <div class="grad-num">畢業序號 <span id="modalNum"></span></div>
+    <button class="modal-close" id="modalCloseBtn">太好了！收下感謝狀 🎉</button>
+  </div>
+</div>
+
+<script src="graduates_data.js"></script>
+<script>
+const EASTER_EGG = "210.7799_";
+
+const input = document.getElementById("searchInput");
+const resultArea = document.getElementById("resultArea");
+const overlay = document.getElementById("modalOverlay");
+
+input.addEventListener("input", () => {
+  const raw = input.value.trim();
+  const q = raw.toLowerCase();
+  if (!q) {
+    resultArea.innerHTML = '<div class="empty-state">🔍</div>';
+    return;
+  }
+
+  const matches = GRADUATES.filter(g => g.name.toLowerCase().includes(q));
+
+  if (matches.length === 0) {
+    if (q.startsWith("210.")) {
+      resultArea.innerHTML = `
+        <div class="no-result">
+          <div class="easter-text">小芸都畢業了，<br>你沒有 ：（</div>
+          <div class="sub-text">查無此人🤔</div>
+        </div>`;
+    } else {
+      resultArea.innerHTML = `
+        <div class="no-result">
+          <div class="big-text">不好意思，<br>您肄業。</div>
+          <div class="sub-text">查無此人🤔</div>
+        </div>`;
+    }
+    return;
+  }
+
+  const limited = matches.slice(0, 50);
+  const countHtml = `<div class="result-count">找到 ${matches.length} 筆${matches.length > 50 ? "，顯示前 50 筆" : ""}</div>`;
+
+  resultArea.innerHTML = countHtml + limited.map(g => `
+    <div class="result-card" onclick="showGrad(${JSON.stringify(g.name)}, ${g.num})">
+      <span class="result-num">#&nbsp;${g.num}</span>
+      <span class="result-name">${escapeHtml(g.name)}</span>
+      <span class="result-arrow">›</span>
+    </div>`).join("");
+});
+
+function escapeHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function showGrad(name, num) {
+  document.getElementById("modalName").textContent = name;
+  document.getElementById("modalNum").textContent = num;
+  overlay.classList.add("active");
+  launchConfetti();
+}
+
+function closeModal() {
+  overlay.classList.remove("active");
+  document.getElementById("confettiContainer").innerHTML = "";
+}
+
+overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
+document.getElementById("modalCloseBtn").addEventListener("click", closeModal);
+
+function launchConfetti() {
+  const container = document.getElementById("confettiContainer");
+  container.innerHTML = "";
+  const colors = ["#f472b6","#a78bfa","#fb7185","#60a5fa","#34d399","#fbbf24","#fff","#f9a8d4"];
+  for (let i = 0; i < 90; i++) {
+    const el = document.createElement("div");
+    el.className = "confetti";
+    const size = Math.random() * 10 + 6;
+    el.style.cssText = [
+      `left:${Math.random()*100}%`,
+      `background:${colors[Math.floor(Math.random()*colors.length)]}`,
+      `width:${size}px`,
+      `height:${size}px`,
+      `border-radius:${Math.random()>0.5?"50%":"3px"}`,
+      `animation-duration:${(Math.random()*2+1.5).toFixed(2)}s`,
+      `animation-delay:${(Math.random()*0.6).toFixed(2)}s`
+    ].join(";");
+    container.appendChild(el);
+  }
+}
+</script>
+</body>
+</html>

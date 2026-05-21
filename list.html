@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📋 畢業生完整名單</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 40%, #f0e8ff 100%);
+    font-family: "Microsoft JhengHei", "PingFang TC", Arial, sans-serif;
+    color: #4a3050;
+    padding: 60px 20px 40px;
+  }
+  .nav-link {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    background: #fff;
+    color: #c06090;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 0.88rem;
+    border: 1.5px solid #f9c8e8;
+    transition: all 0.3s;
+    box-shadow: 0 2px 12px rgba(244,114,182,0.12);
+    z-index: 10;
+    font-weight: 600;
+  }
+  .nav-link:hover {
+    background: #fdf0f8;
+    border-color: #f472b6;
+    color: #f472b6;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .header h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 900;
+    background: linear-gradient(90deg, #f472b6, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 2px 10px rgba(244,114,182,0.25));
+  }
+  .header .stats {
+    color: #b48abf;
+    font-size: 0.9rem;
+  }
+  .header .stats span {
+    color: #f472b6;
+    font-weight: 700;
+  }
+  .filter-bar {
+    max-width: 500px;
+    margin: 0 auto 24px;
+  }
+  .filter-input {
+    width: 100%;
+    padding: 13px 22px;
+    font-size: 1rem;
+    border: 2px solid #f9c8e8;
+    border-radius: 40px;
+    background: #fff;
+    color: #4a3050;
+    outline: none;
+    transition: all 0.3s;
+    font-family: inherit;
+    box-shadow: 0 2px 14px rgba(244,114,182,0.1);
+  }
+  .filter-input::placeholder { color: #d8a8cc; }
+  .filter-input:focus {
+    border-color: #f472b6;
+    box-shadow: 0 4px 24px rgba(244,114,182,0.22);
+  }
+  .table-wrapper {
+    max-width: 820px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1.5px solid #f9c8e8;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 30px rgba(244,114,182,0.1);
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead {
+    background: linear-gradient(90deg, #fce7f3, #ede9fe);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  thead th {
+    padding: 15px 24px;
+    text-align: left;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #b48abf;
+    border-bottom: 1.5px solid #f9c8e8;
+  }
+  thead th:first-child { width: 110px; }
+  tbody tr {
+    border-bottom: 1px solid #fce7f3;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #fdf0f8; }
+  tbody tr:nth-child(even) { background: #fffafd; }
+  tbody tr:nth-child(even):hover { background: #fdf0f8; }
+  tbody td { padding: 11px 24px; font-size: 0.95rem; }
+  tbody td:first-child {
+    font-weight: 700;
+    color: #f472b6;
+    font-size: 0.88rem;
+    font-variant-numeric: tabular-nums;
+  }
+  tbody td:last-child {
+    font-weight: 500;
+    color: #4a3050;
+    word-break: break-all;
+  }
+  .no-match {
+    text-align: center;
+    padding: 60px 20px;
+    color: #c09ab8;
+    font-size: 1rem;
+  }
+  .hidden { display: none; }
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(250,220,240,0.55);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: linear-gradient(145deg, #fff8fd, #f5f0ff);
+    border: 2.5px solid #f472b6;
+    border-radius: 28px;
+    padding: 48px 36px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 12px 60px rgba(244,114,182,0.25);
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.6) rotate(-5deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+  .modal .emoji { font-size: 4.5rem; display: block; margin-bottom: 14px; }
+  .modal h2 {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, #f472b6, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 14px;
+  }
+  .modal .grad-name {
+    font-size: 1.25rem;
+    color: #4a3050;
+    font-weight: 700;
+    margin-bottom: 8px;
+    word-break: break-all;
+  }
+  .modal .grad-num {
+    color: #b48abf;
+    font-size: 1rem;
+    margin-bottom: 26px;
+  }
+  .modal .grad-num span {
+    color: #f472b6;
+    font-weight: 900;
+    font-size: 1.4rem;
+  }
+  .modal-close {
+    background: linear-gradient(135deg, #f472b6, #a78bfa);
+    color: #fff;
+    border: none;
+    padding: 13px 36px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 18px rgba(244,114,182,0.3);
+  }
+  .modal-close:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 24px rgba(244,114,182,0.45);
+  }
+  .confetti-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 999;
+    overflow: hidden;
+  }
+  .confetti {
+    position: absolute;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="nav-link">🔍 回搜尋頁</a>
+
+<div class="header">
+  <h1>📋 畢業生完整名單</h1>
+  <div class="stats">共 <span id="totalCount">2589</span> 位英雄順利畢業，恭喜！🎉</div>
+</div>
+
+<div class="filter-bar">
+  <input type="text" class="filter-input" id="filterInput" placeholder="在名單中搜尋..." autocomplete="off" spellcheck="false">
+</div>
+
+<div class="table-wrapper">
+  <table id="mainTable">
+    <thead>
+      <tr>
+        <th>序號</th>
+        <th>在籍名稱</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <div class="no-match hidden" id="noMatch">查無此人🤔</div>
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <span class="emoji">🎓</span>
+    <h2>恭喜你畢業！</h2>
+    <div class="grad-name" id="modalName"></div>
+    <div class="grad-num">畢業序號 <span id="modalNum"></span></div>
+    <button class="modal-close" id="modalCloseBtn">太好了！收下感謝狀 🎉</button>
+  </div>
+</div>
+
+<script src="graduates_data.js"></script>
+<script>
+const tableBody = document.getElementById("tableBody");
+const filterInput = document.getElementById("filterInput");
+const noMatch = document.getElementById("noMatch");
+const overlay = document.getElementById("modalOverlay");
+const mainTable = document.getElementById("mainTable");
+
+function escapeHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function renderRows(data) {
+  tableBody.innerHTML = data.map(g => `
+    <tr onclick="showGrad(${JSON.stringify(g.name)}, ${g.num})">
+      <td>#&nbsp;${g.num}</td>
+      <td>${escapeHtml(g.name)}</td>
+    </tr>`).join("");
+  const hasResults = data.length > 0;
+  mainTable.style.display = hasResults ? "" : "none";
+  noMatch.classList.toggle("hidden", hasResults);
+}
+
+renderRows(GRADUATES);
+
+filterInput.addEventListener("input", () => {
+  const q = filterInput.value.trim().toLowerCase();
+  renderRows(q ? GRADUATES.filter(g => g.name.toLowerCase().includes(q)) : GRADUATES);
+});
+
+function showGrad(name, num) {
+  document.getElementById("modalName").textContent = name;
+  document.getElementById("modalNum").textContent = num;
+  overlay.classList.add("active");
+  launchConfetti();
+}
+
+function closeModal() {
+  overlay.classList.remove("active");
+  document.getElementById("confettiContainer").innerHTML = "";
+}
+
+overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
+document.getElementById("modalCloseBtn").addEventListener("click", closeModal);
+
+function launchConfetti() {
+  const container = document.getElementById("confettiContainer");
+  container.innerHTML = "";
+  const colors = ["#f472b6","#a78bfa","#fb7185","#60a5fa","#34d399","#fbbf24","#fff","#f9a8d4"];
+  for (let i = 0; i < 90; i++) {
+    const el = document.createElement("div");
+    el.className = "confetti";
+    const size = Math.random() * 10 + 6;
+    el.style.cssText = [
+      `left:${Math.random()*100}%`,
+      `background:${colors[Math.floor(Math.random()*colors.length)]}`,
+      `width:${size}px`,
+      `height:${size}px`,
+      `border-radius:${Math.random()>0.5?"50%":"3px"}`,
+      `animation-duration:${(Math.random()*2+1.5).toFixed(2)}s`,
+      `animation-delay:${(Math.random()*0.6).toFixed(2)}s`
+    ].join(";");
+    container.appendChild(el);
+  }
+}
+</script>
+</body>
+</html>
