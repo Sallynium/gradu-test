@@ -275,16 +275,9 @@
     font-size: 0.68rem; color: #5a6a78;
     white-space: nowrap; text-align: center;
   }
-  .cert-badge-label {
-    position: absolute;
-    left: 60.5%; top: 76%;
-    transform: translateX(-50%);
-    font-size: 0.55rem; color: #6a7a88;
-    letter-spacing: 0.15em; text-align: center;
-  }
   .cert-badge-num {
     position: absolute;
-    left: 60.5%; top: 79%;
+    left: 64%; top: 77%;
     transform: translateX(-50%);
     font-size: 1.8rem; font-weight: 900; color: #2a3848;
     text-align: center;
@@ -425,7 +418,6 @@ function renderCertificate(username, num, displayName) {
       </div>
       <div class="cert-dname">${escapeHtml(displayName)}</div>
       <div class="cert-uname">@${escapeHtml(username)}</div>
-      <div class="cert-badge-label">畢業序號</div>
       <div class="cert-badge-num"># ${num}</div>
     </div>
     <div class="cert-actions">
