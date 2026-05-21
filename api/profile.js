@@ -18,9 +18,13 @@ module.exports = async (req, res) => {
     let displayName = user;
     if (titleMatch) {
       const raw = titleMatch[1]
+        .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+        .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
         .replace(/&amp;/g, '&')
-        .replace(/&#39;/g, "'")
-        .replace(/&quot;/g, '"');
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
       const m = raw.match(/^(.+?)\s*[\(@•｜|]/);
       displayName = m ? m[1].trim() : raw.split(' on ')[0].trim();
     }
