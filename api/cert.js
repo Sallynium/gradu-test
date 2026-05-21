@@ -13,8 +13,9 @@ module.exports = async (req, res) => {
 
   try {
     const TEMPLATE = path.join(process.cwd(), 'template.png');
+    const SIZE = 2481;
 
-    // 抓頭貼
+    // 抓頭貼與顯示名稱
     const avatarRes = await fetch(`https://www.threads.net/@${encodeURIComponent(user)}`, {
       headers: {
         'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
@@ -22,18 +23,15 @@ module.exports = async (req, res) => {
       }
     });
     const html = await avatarRes.text();
-    const m = html.match(/property="og:image"\s+content="([^"]+)"/);
 
     let avatarBuf;
-    if (m) {
-      const imgUrl = m[1].replace(/&amp;/g, '&');
+    const imgMatch = html.match(/property="og:image"\s+content="([^"]+)"/);
+    if (imgMatch) {
+      const imgUrl = imgMatch[1].replace(/&amp;/g, '&');
       const imgRes = await fetch(imgUrl);
-      if (imgRes.ok) {
-        avatarBuf = Buffer.from(await imgRes.arrayBuffer());
-      }
+      if (imgRes.ok) avatarBuf = Buffer.from(await imgRes.arrayBuffer());
     }
 
-    // 解析顯示名稱（若未傳 name 參數）
     let displayName = name || user;
     if (!name) {
       const titleMatch = html.match(/property="og:title"\s+content="([^"]+)"/);
@@ -64,21 +62,23 @@ module.exports = async (req, res) => {
         .composite([{ input: circleMask, blend: 'dest-in' }])
         .png()
         .toBuffer();
-      composites.push({ input: circleAvatar, top: 755, left: 1415 });
+      composites.push({ input: circleAvatar, top: 685, left: 1535 });
     }
 
-    const { width, height } = await sharp(TEMPLATE).metadata();
-    const textSvg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-      <text x="1630" y="1250" font-size="60" font-weight="bold" fill="black"
+    const textSvg = `<svg width="${SIZE}" height="${SIZE}" xmlns="http://www.w3.org/2000/svg">
+      <text x="1750" y="1450" font-size="60" font-weight="bold" fill="black"
             text-anchor="middle" font-family="Arial, sans-serif">${esc(displayName)}</text>
-      <text x="1630" y="1340" font-size="46" fill="#444444"
+      <text x="1750" y="1530" font-size="46" fill="#444444"
             text-anchor="middle" font-family="Arial, sans-serif">${esc('@' + user)}</text>
-      <text x="1560" y="2005" font-size="46" fill="black"
+      <text x="1500" y="1930" font-size="36" fill="#888888"
+            text-anchor="middle" font-family="Arial, sans-serif">畢業序號</text>
+      <text x="1500" y="2030" font-size="100" font-weight="bold" fill="black"
             text-anchor="middle" font-family="Arial, sans-serif">${esc(num)}</text>
     </svg>`;
     composites.push({ input: Buffer.from(textSvg), top: 0, left: 0 });
 
     const output = await sharp(TEMPLATE)
+      .resize(SIZE, SIZE, { fit: 'fill' })
       .composite(composites)
       .png()
       .toBuffer();
