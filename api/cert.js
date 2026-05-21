@@ -7,7 +7,7 @@ registerFont(path.join(process.cwd(), 'fonts', 'NotoSansTC-Regular.otf'), { fami
 const SIZE = 2481;
 const AVATAR_D = 430;
 const AVATAR_R = AVATAR_D / 2;
-const AVATAR_CX = 1750;
+const AVATAR_CX = 731;
 const AVATAR_CY = 900;
 
 module.exports = async (req, res) => {
@@ -76,15 +76,15 @@ module.exports = async (req, res) => {
 
     ctx.font = 'bold 110px "Noto Sans CJK TC"';
     ctx.fillStyle = '#000000';
-    ctx.fillText(displayName, 1750, 1450);
+    ctx.fillText(displayName, 731, 1450);
 
     ctx.font = '75px "Noto Sans CJK TC"';
     ctx.fillStyle = '#444444';
-    ctx.fillText('@' + user, 1750, 1530);
+    ctx.fillText('@' + user, 731, 1530);
 
     ctx.font = 'bold 200px "Noto Sans CJK TC"';
     ctx.fillStyle = '#000000';
-    ctx.fillText(num, 1580, 1980);
+    ctx.fillText(num, 901, 1980);
 
     const buf = canvas.toBuffer('image/png');
     res.setHeader('Content-Type', 'image/png');

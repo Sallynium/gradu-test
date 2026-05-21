@@ -7,7 +7,7 @@ registerFont(path.join(__dirname, 'fonts', 'NotoSansTC-Regular.otf'), { family: 
 const SIZE = 2481;
 const AVATAR_D = 430;
 const AVATAR_R = AVATAR_D / 2;
-const AVATAR_CX = 1750;
+const AVATAR_CX = 731;
 const AVATAR_CY = 900;
 
 async function generateCert({ avatarPath, name, userId, certNum, outputPath }) {
