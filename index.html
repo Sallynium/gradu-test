@@ -353,6 +353,7 @@
   <div class="cert-wrapper" id="certWrapper"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="graduates_data.js"></script>
 <script>
 const EASTER_EGG = "210.7799_";
@@ -460,9 +461,35 @@ function renderCertificate(username, num, displayName) {
       </div>
     </div>
     <div class="cert-actions">
-      <button class="cert-btn cert-btn-slate" onclick="window.print()">🖨️ 列印 / 儲存 PDF</button>
+      <button class="cert-btn cert-btn-slate" onclick="saveCertImg()">💾 儲存圖片</button>
+      <button class="cert-btn cert-btn-slate" id="copyCertBtn" onclick="copyCertImg()">📋 拷貝圖片</button>
       <button class="cert-btn cert-btn-ghost" onclick="closeCert()">✕ 關閉</button>
     </div>`;
+}
+
+async function saveCertImg() {
+  const cert = document.querySelector('.certificate');
+  const canvas = await html2canvas(cert, { useCORS: true, scale: 2 });
+  const a = document.createElement('a');
+  a.download = '畢業證書.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+async function copyCertImg() {
+  const btn = document.getElementById('copyCertBtn');
+  const cert = document.querySelector('.certificate');
+  const canvas = await html2canvas(cert, { useCORS: true, scale: 2 });
+  canvas.toBlob(async blob => {
+    try {
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      btn.textContent = '✅ 已複製！';
+      setTimeout(() => btn.textContent = '📋 拷貝圖片', 2000);
+    } catch(e) {
+      const url = URL.createObjectURL(blob);
+      window.open(url);
+    }
+  }, 'image/png');
 }
 
 function closeCert() {
