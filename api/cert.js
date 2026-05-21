@@ -2,7 +2,7 @@ const { createCanvas, loadImage, registerFont } = require('canvas');
 const sharp = require('sharp');
 const path = require('path');
 
-registerFont(path.join(process.cwd(), 'fonts', 'Iansui-Regular.ttf'), { family: 'Iansui' });
+registerFont(path.join(process.cwd(), 'fonts', 'NotoSansTC-Regular.otf'), { family: 'Noto Sans CJK TC' });
 
 const SIZE = 2481;
 const AVATAR_D = 430;
@@ -74,15 +74,15 @@ module.exports = async (req, res) => {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';
 
-    ctx.font = 'bold 110px Iansui';
+    ctx.font = 'bold 110px "Noto Sans CJK TC"';
     ctx.fillStyle = '#000000';
     ctx.fillText(displayName, 1750, 1450);
 
-    ctx.font = '75px Iansui';
+    ctx.font = '75px "Noto Sans CJK TC"';
     ctx.fillStyle = '#444444';
     ctx.fillText('@' + user, 1750, 1530);
 
-    ctx.font = 'bold 200px Iansui';
+    ctx.font = 'bold 200px "Noto Sans CJK TC"';
     ctx.fillStyle = '#000000';
     ctx.fillText(num, 1580, 1980);
 

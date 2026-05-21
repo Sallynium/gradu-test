@@ -2,7 +2,7 @@ const { createCanvas, loadImage, registerFont } = require('canvas');
 const path = require('path');
 const fs = require('fs');
 
-registerFont(path.join(__dirname, 'fonts', 'Iansui-Regular.ttf'), { family: 'Iansui' });
+registerFont(path.join(__dirname, 'fonts', 'NotoSansTC-Regular.otf'), { family: 'Noto Sans CJK TC' });
 
 const SIZE = 2481;
 const AVATAR_D = 430;
@@ -28,15 +28,15 @@ async function generateCert({ avatarPath, name, userId, certNum, outputPath }) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
 
-  ctx.font = 'bold 110px Iansui';
+  ctx.font = 'bold 110px "Noto Sans CJK TC"';
   ctx.fillStyle = '#000000';
   ctx.fillText(name, 1750, 1450);
 
-  ctx.font = '75px Iansui';
+  ctx.font = '75px "Noto Sans CJK TC"';
   ctx.fillStyle = '#444444';
   ctx.fillText(userId, 1750, 1530);
 
-  ctx.font = 'bold 200px Iansui';
+  ctx.font = 'bold 200px "Noto Sans CJK TC"';
   ctx.fillStyle = '#000000';
   ctx.fillText(certNum, 1580, 1980);
 
