@@ -18,6 +18,7 @@
   "homepage": "https://github.com/Sallynium/gradu-test#readme",
   "description": "",
   "dependencies": {
+    "@fontsource/noto-sans-tc": "^5.2.9",
     "sharp": "^0.34.5"
   }
 }

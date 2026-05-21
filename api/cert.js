@@ -1,6 +1,9 @@
 const sharp = require('sharp');
 const path = require('path');
 
+const FONT_PATH = path.join(process.cwd(), 'fonts', 'NotoSansTC-Regular.otf').replace(/\\/g, '/');
+const FONT_SRC = `file://${FONT_PATH.startsWith('/') ? '' : '/'}${FONT_PATH}`;
+
 module.exports = async (req, res) => {
   const { user, name, num } = req.query;
   if (!user || !num) {
@@ -15,7 +18,6 @@ module.exports = async (req, res) => {
     const TEMPLATE = path.join(process.cwd(), 'template.png');
     const SIZE = 2481;
 
-    // 抓頭貼與顯示名稱
     const avatarRes = await fetch(`https://www.threads.net/@${encodeURIComponent(user)}`, {
       headers: {
         'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
@@ -45,7 +47,6 @@ module.exports = async (req, res) => {
       }
     }
 
-    // 圓形頭貼
     const AVATAR_D = 430;
     const AVATAR_R = AVATAR_D / 2;
     const circleMask = Buffer.from(
@@ -66,14 +67,20 @@ module.exports = async (req, res) => {
     }
 
     const textSvg = `<svg width="${SIZE}" height="${SIZE}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style>
+          @font-face {
+            font-family: 'NotoSansTC';
+            src: url('${FONT_SRC}');
+          }
+        </style>
+      </defs>
       <text x="1750" y="1450" font-size="60" font-weight="bold" fill="black"
-            text-anchor="middle" font-family="Arial, sans-serif">${esc(displayName)}</text>
+            text-anchor="middle" font-family="NotoSansTC, sans-serif">${esc(displayName)}</text>
       <text x="1750" y="1530" font-size="46" fill="#444444"
-            text-anchor="middle" font-family="Arial, sans-serif">${esc('@' + user)}</text>
-      <text x="1500" y="1930" font-size="36" fill="#888888"
-            text-anchor="middle" font-family="Arial, sans-serif">畢業序號</text>
-      <text x="1500" y="2030" font-size="100" font-weight="bold" fill="black"
-            text-anchor="middle" font-family="Arial, sans-serif">${esc(num)}</text>
+            text-anchor="middle" font-family="NotoSansTC, sans-serif">${esc('@' + user)}</text>
+      <text x="1580" y="1980" font-size="100" font-weight="bold" fill="black"
+            text-anchor="middle" font-family="NotoSansTC, sans-serif">${esc(num)}</text>
     </svg>`;
     composites.push({ input: Buffer.from(textSvg), top: 0, left: 0 });
 

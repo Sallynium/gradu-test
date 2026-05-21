@@ -1,6 +1,9 @@
 const sharp = require('sharp');
 const path = require('path');
 
+const FONT_PATH = path.join(__dirname, 'fonts', 'NotoSansTC-Regular.otf').replace(/\\/g, '/');
+const FONT_SRC = `file://${FONT_PATH.startsWith('/') ? '' : '/'}${FONT_PATH}`;
+
 async function generateCert({ avatarPath, name, userId, certNum, outputPath }) {
   const TEMPLATE = path.join(__dirname, 'template.png');
   const SIZE = 2481;
@@ -23,14 +26,20 @@ async function generateCert({ avatarPath, name, userId, certNum, outputPath }) {
     .toBuffer();
 
   const textSvg = `<svg width="${SIZE}" height="${SIZE}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <style>
+        @font-face {
+          font-family: 'NotoSansTC';
+          src: url('${FONT_SRC}');
+        }
+      </style>
+    </defs>
     <text x="1750" y="1450" font-size="60" font-weight="bold" fill="black"
-          text-anchor="middle" font-family="Arial, sans-serif">${esc(name)}</text>
+          text-anchor="middle" font-family="NotoSansTC, sans-serif">${esc(name)}</text>
     <text x="1750" y="1530" font-size="46" fill="#444444"
-          text-anchor="middle" font-family="Arial, sans-serif">${esc(userId)}</text>
-    <text x="1500" y="1930" font-size="36" fill="#888888"
-          text-anchor="middle" font-family="Arial, sans-serif">畢業序號</text>
-    <text x="1500" y="2030" font-size="100" font-weight="bold" fill="black"
-          text-anchor="middle" font-family="Arial, sans-serif">${esc(certNum)}</text>
+          text-anchor="middle" font-family="NotoSansTC, sans-serif">${esc(userId)}</text>
+    <text x="1580" y="1980" font-size="100" font-weight="bold" fill="black"
+          text-anchor="middle" font-family="NotoSansTC, sans-serif">${esc(certNum)}</text>
   </svg>`;
 
   await sharp(TEMPLATE)
