@@ -478,28 +478,25 @@ function renderCertificate(username, num, displayName) {
 }
 
 async function saveCertImg() {
-  const cert = document.querySelector('.certificate');
-  const canvas = await html2canvas(cert, { useCORS: true, scale: 2 });
   const a = document.createElement('a');
   a.download = '畢業證書.png';
-  a.href = canvas.toDataURL('image/png');
+  a.href = `/api/cert?user=${encodeURIComponent(_certName)}&num=${encodeURIComponent('# ' + _certNum)}`;
   a.click();
 }
 
 async function copyCertImg() {
   const btn = document.getElementById('copyCertBtn');
-  const cert = document.querySelector('.certificate');
-  const canvas = await html2canvas(cert, { useCORS: true, scale: 2 });
-  canvas.toBlob(async blob => {
-    try {
-      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-      btn.textContent = '✅ 已複製！';
-      setTimeout(() => btn.textContent = '📋 拷貝圖片', 2000);
-    } catch(e) {
-      const url = URL.createObjectURL(blob);
-      window.open(url);
-    }
-  }, 'image/png');
+  btn.textContent = '⏳ 處理中…';
+  try {
+    const res = await fetch(`/api/cert?user=${encodeURIComponent(_certName)}&num=${encodeURIComponent('# ' + _certNum)}`);
+    const blob = await res.blob();
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    btn.textContent = '✅ 已複製！';
+    setTimeout(() => btn.textContent = '📋 拷貝圖片', 2000);
+  } catch(e) {
+    btn.textContent = '📋 拷貝圖片';
+    window.open(`/api/cert?user=${encodeURIComponent(_certName)}&num=${encodeURIComponent('# ' + _certNum)}`);
+  }
 }
 
 function closeCert() {
