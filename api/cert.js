@@ -84,7 +84,7 @@ module.exports = async (req, res) => {
 
     ctx.font = 'bold 200px "Noto Sans CJK TC"';
     ctx.fillStyle = '#000000';
-    ctx.fillText(num, 901, 1980);
+    ctx.fillText(num, 1580, 1980);
 
     const buf = canvas.toBuffer('image/png');
     res.setHeader('Content-Type', 'image/png');
